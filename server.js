@@ -3,16 +3,6 @@ var express = require("express"),
   swaggerJsdoc = require("swagger-jsdoc"),
   swaggerUi = require("swagger-ui-express");
 
-const app = express();
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-);
-app.use(bodyParser.json());
-
-app.use("/books", require("./routes/books"));
-
 const options = {
   definition: {
     openapi: "3.0.0",
@@ -33,18 +23,26 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:3000/books",
+        url: "http://localhost:3000",
       },
     ],
   },
   apis: ["./routes/books.js"],
 };
 
-const specs = swaggerJsdoc(options);
+const app = express();
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
+app.use(bodyParser.json());
+
+app.use("/books", require("./routes/books"));
 app.use(
   "/api-docs",
   swaggerUi.serve,
-  swaggerUi.setup(specs, { explorer: true })
+  swaggerUi.setup(swaggerJsdoc(options), { explorer: true })
 );
 
 const PORT = process.env.PORT || 3000;
